@@ -3,7 +3,7 @@
 	<PropertyGroup>
 		<!--Build and code-->
 		<OutputType>Library</OutputType>
-		<Version>0.0.1</Version>
+		<Version>6.0.23</Version>
 		<TargetFramework>net6.0</TargetFramework>
 		<!--Best practice-->
 		<ImplicitUsings>enable</ImplicitUsings>
