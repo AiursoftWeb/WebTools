@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<!--Build and code-->
+		<OutputType>Library</OutputType>
+		<Version>0.0.1</Version>
+		<TargetFramework>net6.0</TargetFramework>
+		<!--Best practice-->
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+		<!--Nuget--> 
+		<Company>Aiursoft</Company>
+		<Product>NugetNinja</Product>
+		<Authors>anduin</Authors>
+		<Description>A tool for web development.</Description>
+		<PackageTags>cli nuget dotnet csproj dependencies</PackageTags>
+		<RepositoryType>git</RepositoryType>
+		<RepositoryUrl>https://gitlab.aiursoft.cn/aiursoft/webtools</RepositoryUrl>
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
+		<PackageProjectUrl>https://gitlab.aiursoft.cn/aiursoft/webtools</PackageProjectUrl>
+	</PropertyGroup>
+
+</Project>
