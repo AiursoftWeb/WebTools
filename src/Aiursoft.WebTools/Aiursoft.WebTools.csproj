@@ -19,5 +19,15 @@
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
 		<PackageProjectUrl>https://gitlab.aiursoft.cn/aiursoft/webtools</PackageProjectUrl>
 	</PropertyGroup>
+	
+	<ItemGroup>
+		<FrameworkReference Include="Microsoft.AspNetCore.App" />
+	</ItemGroup>
+	
+	<ItemGroup>
+	  <PackageReference Include="Aiursoft.CSTools" Version="6.0.24" />
+	  <PackageReference Include="Aiursoft.Scanner.Abstractions" Version="6.0.11" />
+	  <PackageReference Include="QRCoder" Version="1.4.1" />
+	</ItemGroup>
 
 </Project>
