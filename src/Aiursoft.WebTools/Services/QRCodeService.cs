@@ -1,28 +1,19 @@
-﻿using System.Drawing;
-using System.Drawing.Imaging;
-using Aiursoft.Scanner.Abstractions;
+﻿using Aiursoft.Scanner.Abstractions;
 using Aiursoft.CSTools.Tools;
-using QRCoder;
+using Net.Codecrete.QrCodeGenerator;
 
 namespace Aiursoft.WebTools.Services;
 
 public class QRCodeService : ITransientDependency
 {
-    public byte[] ToQRCodePngBytes(string source)
+    public string ToQRCodeSvgXml(string source)
     {
-        var qrCodeData = new QRCodeGenerator().CreateQrCode(source, QRCodeGenerator.ECCLevel.Q);
-        var qrCode = new QRCode(qrCodeData);
-        using var qrCodeImage = qrCode.GetGraphic(20, Color.Black, Color.White, true);
-        using var memoryStream = new MemoryStream();
-        qrCodeImage.Save(memoryStream, ImageFormat.Png);
-        var byteBuffer = memoryStream.ToArray();
-        memoryStream.Close();
-        return byteBuffer;
+        var qr = QrCode.EncodeText(source, QrCode.Ecc.Medium);
+        return qr.ToSvgString(0);
     }
 
-    public string ToQRCodeBase64(string source)
+    public string ToQRCodeImgSrc(string source)
     {
-        var qrCode = ToQRCodePngBytes(source);
-        return "data:image/png;base64," + qrCode.BytesToBase64();
+        return "data:image/svg+xml;base64," + ToQRCodeSvgXml(source).StringToBase64();
     }
 }
