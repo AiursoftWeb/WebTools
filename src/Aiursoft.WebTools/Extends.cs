@@ -90,6 +90,4 @@ public static partial class Extends
     {
         return source.ToString(CultureInfo.InvariantCulture);
     }
-
-
 }
