@@ -7,7 +7,10 @@ namespace Aiursoft.WebTools.Models;
 
 public interface IWebStartup
 {
-    public void ConfigureServices(IConfiguration configuration, IServiceCollection services);
+    public void ConfigureServices(
+        IConfiguration configuration, 
+        IWebHostEnvironment environment, 
+        IServiceCollection services);
 
-    public void Configure(IApplicationBuilder app, IWebHostEnvironment env);
+    public void Configure(IApplicationBuilder app);
 }

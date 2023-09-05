@@ -80,9 +80,9 @@ public static partial class Extends
         }
 
         var startup = new T();
-        startup.ConfigureServices(builder.Configuration, builder.Services);
+        startup.ConfigureServices(builder.Configuration, builder.Environment, builder.Services);
         var app = builder.Build();
-        startup.Configure(app, app.Environment);
+        startup.Configure(app);
         return app;
     }
 
