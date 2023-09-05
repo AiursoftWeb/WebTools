@@ -12,5 +12,5 @@ public interface IWebStartup
         IWebHostEnvironment environment, 
         IServiceCollection services);
 
-    public void Configure(IApplicationBuilder app);
+    public void Configure(IApplicationBuilder app, IWebHostEnvironment webHostEnvironment);
 }

@@ -82,7 +82,7 @@ public static partial class Extends
         var startup = new T();
         startup.ConfigureServices(builder.Configuration, builder.Environment, builder.Services);
         var app = builder.Build();
-        startup.Configure(app);
+        startup.Configure(app, app.Environment);
         return app;
     }
 
