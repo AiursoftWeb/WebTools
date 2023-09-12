@@ -39,18 +39,23 @@ public class Program
     }
 }
 
-public class Startup
+public class Startup : IWebStartup
 {
-    public void ConfigureServices(IServiceCollection services)
+    public void ConfigureServices(IConfiguration configuration, IWebHostEnvironment environment, IServiceCollection services)
     {
+        var knownLists = configuration.GetSection("KnownLinks");
+
+        services.Configure<List<KnownLink>>(knownLists);
+
         services
-            .AddControllers();
+            .AddControllers()
+            .AddApplicationPart(Assembly.GetExecutingAssembly());
     }
 
-    public void Configure(IApplicationBuilder app)
+    public void Configure(WebApplication app)
     {
         app.UseRouting();
-        app.UseEndpoints(endpoints => endpoints.MapDefaultControllerRoute());
+        app.MapDefaultControllerRoute();
     }
 }
 ```
