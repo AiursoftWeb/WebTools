@@ -3,21 +3,20 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Aiursoft.WebTools", "src\Aiursoft.WebTools\Aiursoft.WebTools.csproj", "{4A94355E-5DE9-4B66-AB18-10CEC3073A6A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Aiursoft.WebTools", "src\Aiursoft.WebTools\Aiursoft.WebTools.csproj", "{4A94355E-5DE9-4B66-AB18-10CEC3073A6A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Aiursoft.WebTools.Tests", "tests\Aiursoft.WebTools.Tests\Aiursoft.WebTools.Tests.csproj", "{945F5107-D145-454D-85E7-DE383ECB9C8E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Aiursoft.WebTools.Tests", "tests\Aiursoft.WebTools.Tests\Aiursoft.WebTools.Tests.csproj", "{945F5107-D145-454D-85E7-DE383ECB9C8E}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{FE4F523A-A7FE-42BF-8BA1-BD9ECC582440}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{F1C164F6-4888-4736-A4E6-DD2EE12B2355}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Aiursoft.WebTools.Abstractions", "src\Aiursoft.WebTools.Abstractions\Aiursoft.WebTools.Abstractions.csproj", "{82F2F733-01CD-40D8-9788-4A9655054BE4}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
-	EndGlobalSection
-	GlobalSection(SolutionProperties) = preSolution
-		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{4A94355E-5DE9-4B66-AB18-10CEC3073A6A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -28,9 +27,20 @@ Global
 		{945F5107-D145-454D-85E7-DE383ECB9C8E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{945F5107-D145-454D-85E7-DE383ECB9C8E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{945F5107-D145-454D-85E7-DE383ECB9C8E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{82F2F733-01CD-40D8-9788-4A9655054BE4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{82F2F733-01CD-40D8-9788-4A9655054BE4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{82F2F733-01CD-40D8-9788-4A9655054BE4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{82F2F733-01CD-40D8-9788-4A9655054BE4}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{4A94355E-5DE9-4B66-AB18-10CEC3073A6A} = {FE4F523A-A7FE-42BF-8BA1-BD9ECC582440}
 		{945F5107-D145-454D-85E7-DE383ECB9C8E} = {F1C164F6-4888-4736-A4E6-DD2EE12B2355}
+		{82F2F733-01CD-40D8-9788-4A9655054BE4} = {FE4F523A-A7FE-42BF-8BA1-BD9ECC582440}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {E3436FB0-85CE-4A3D-B3D1-7D8600D03963}
 	EndGlobalSection
 EndGlobal
