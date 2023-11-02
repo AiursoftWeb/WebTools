@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>Library</OutputType>
-    <Version>7.0.7</Version>
+    <Version>7.0.8</Version>
     <TargetFramework>net7.0</TargetFramework>
     <AssemblyName>Aiursoft.WebTools</AssemblyName>
     <RootNamespace>Aiursoft.WebTools</RootNamespace>
@@ -27,7 +27,7 @@
     <None Include="../../Readme.md" Pack="true" PackagePath="." />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Aiursoft.CSTools" Version="7.0.1" />
+    <PackageReference Include="Aiursoft.CSTools" Version="7.0.2" />
     <PackageReference Include="Net.Codecrete.QrCodeGenerator" Version="2.0.4" />
   </ItemGroup>
   <ItemGroup>
