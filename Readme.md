@@ -27,9 +27,10 @@ dotnet add package Aiursoft.WebTools
 It is a common practice to create a `Program` class and a `Startup` class in a ASP.NET Core application. However, it is a little bit annoying to write the same code again and again. So we created a `Extends` class to help you to write less code.
 
 ```csharp
-using Aiursoft.WebTools;
+using System.Reflection;
+using Aiursoft.WebTools.Models;
 
-namespace DemoApiApp;
+namespace DemoApp;
 
 public class Program
 {
@@ -44,10 +45,6 @@ public class Startup : IWebStartup
 {
     public void ConfigureServices(IConfiguration configuration, IWebHostEnvironment environment, IServiceCollection services)
     {
-        var knownLists = configuration.GetSection("KnownLinks");
-
-        services.Configure<List<KnownLink>>(knownLists);
-
         services
             .AddControllers()
             .AddApplicationPart(Assembly.GetExecutingAssembly());
