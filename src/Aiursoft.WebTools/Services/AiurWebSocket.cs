@@ -11,12 +11,14 @@ public class AiurWebSocket : AsyncObservable<string>
     
     public bool Connected => !_dropped && _ws.State == WebSocketState.Open;
     
+    public string LastMessage { get; private set; } = string.Empty;
+    
     internal AiurWebSocket(WebSocket ws)
     {
         _ws = ws;
     }
     
-    public async Task Send(string message, CancellationToken token)
+    public async Task Send(string message, CancellationToken token = default)
     {
         try
         {
@@ -33,7 +35,7 @@ public class AiurWebSocket : AsyncObservable<string>
         }
     }
 
-    public async Task Listen(CancellationToken token)
+    public async Task Listen(CancellationToken token = default)
     {
         try
         {
@@ -48,6 +50,7 @@ public class AiurWebSocket : AsyncObservable<string>
                         var messageBytes = buffer.Skip(buffer.Offset).Take(message.Count).ToArray();
                         var messageString = Encoding.UTF8.GetString(messageBytes);
                         Broadcast(messageString);
+                        LastMessage = messageString;
                         break;
                     }
                     case WebSocketMessageType.Close:
@@ -75,7 +78,7 @@ public class AiurWebSocket : AsyncObservable<string>
         }
     }
 
-    public Task Close(CancellationToken token)
+    public Task Close(CancellationToken token = default)
     {
         if (_ws.State == WebSocketState.Open)
         {
