@@ -11,7 +11,7 @@ public class AiurWebSocket : AsyncObservable<string>
     
     public bool Connected => !_dropped && _ws.State == WebSocketState.Open;
     
-    public AiurWebSocket(WebSocket ws)
+    internal AiurWebSocket(WebSocket ws)
     {
         _ws = ws;
     }
