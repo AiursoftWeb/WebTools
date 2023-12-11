@@ -1,6 +1,6 @@
 using System.Net.WebSockets;
 using System.Text;
-using AiurObserver;
+using Aiursoft.AiurObserver;
 
 namespace Aiursoft.WebTools.Services;
 
@@ -49,7 +49,7 @@ public class AiurWebSocket : AsyncObservable<string>
                     {
                         var messageBytes = buffer.Skip(buffer.Offset).Take(message.Count).ToArray();
                         var messageString = Encoding.UTF8.GetString(messageBytes);
-                        Broadcast(messageString);
+                        await BroadcastAsync(messageString);
                         LastMessage = messageString;
                         break;
                     }
@@ -78,7 +78,7 @@ public class AiurWebSocket : AsyncObservable<string>
         }
     }
 
-    public Task Close(CancellationToken token = default)
+    public Task Close(CancellationToken token = default, bool keepObservers = false)
     {
         if (_ws.State == WebSocketState.Open)
         {
@@ -86,6 +86,11 @@ public class AiurWebSocket : AsyncObservable<string>
         }
 
         _dropped = true;
+        
+        if (!keepObservers)
+        {
+            Observers.Clear();
+        }
         
         return Task.CompletedTask;
     }
