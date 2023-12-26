@@ -7,6 +7,7 @@ namespace Aiursoft.WebTools.Attributes;
 
 public class LimitPerMin : ActionFilterAttribute
 {
+    public static bool GlobalEnabled = true;
     private static readonly ConcurrentDictionary<string, (int count, DateTime timestamp)> MemoryDictionary = new();
     private readonly int _limit;
 
@@ -18,6 +19,10 @@ public class LimitPerMin : ActionFilterAttribute
     public override void OnActionExecuting(ActionExecutingContext context)
     {
         base.OnActionExecuting(context);
+        if (!GlobalEnabled)
+        {
+            return;
+        }
         var path = context.HttpContext.Request.Path.ToString();
         var ip = context.HttpContext.Connection.RemoteIpAddress?.ToString() ?? string.Empty;
         var key = ip + path;
