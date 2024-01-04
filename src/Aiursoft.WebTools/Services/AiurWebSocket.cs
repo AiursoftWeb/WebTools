@@ -9,15 +9,15 @@ public class AiurWebSocket : AsyncObservable<string>
     private bool _dropped;
     private readonly WebSocket _ws;
     
+    // ReSharper disable once UnusedMember.Global
     public bool Connected => !_dropped && _ws.State == WebSocketState.Open;
-    
-    public string LastMessage { get; private set; } = string.Empty;
     
     internal AiurWebSocket(WebSocket ws)
     {
         _ws = ws;
     }
     
+    // ReSharper disable once UnusedMember.Global
     public async Task Send(string message, CancellationToken token = default)
     {
         try
@@ -35,6 +35,7 @@ public class AiurWebSocket : AsyncObservable<string>
         }
     }
 
+    // ReSharper disable once UnusedMember.Global
     public async Task Listen(CancellationToken token = default)
     {
         try
@@ -50,7 +51,6 @@ public class AiurWebSocket : AsyncObservable<string>
                         var messageBytes = buffer.Skip(buffer.Offset).Take(message.Count).ToArray();
                         var messageString = Encoding.UTF8.GetString(messageBytes);
                         await BroadcastAsync(messageString);
-                        LastMessage = messageString;
                         break;
                     }
                     case WebSocketMessageType.Close:
@@ -78,6 +78,7 @@ public class AiurWebSocket : AsyncObservable<string>
         }
     }
 
+    // ReSharper disable once UnusedMember.Global
     public Task Close(CancellationToken token = default, bool keepObservers = false)
     {
         if (_ws.State == WebSocketState.Open)
