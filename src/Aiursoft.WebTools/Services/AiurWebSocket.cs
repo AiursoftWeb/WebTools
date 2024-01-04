@@ -4,7 +4,7 @@ using Aiursoft.AiurObserver;
 
 namespace Aiursoft.WebTools.Services;
 
-public class AiurWebSocket : AsyncObservable<string>
+public class AiurWebSocket : AsyncObservable<string>, IConsumer<string>
 {
     private bool _dropped;
     private readonly WebSocket _ws;
@@ -95,4 +95,12 @@ public class AiurWebSocket : AsyncObservable<string>
         
         return Task.CompletedTask;
     }
+
+    public Func<string, Task> Consume => async message =>
+    {
+        if (_ws.State == WebSocketState.Open)
+        {
+            await Send(message);
+        }
+    };
 }
