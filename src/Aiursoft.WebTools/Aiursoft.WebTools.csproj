@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>Library</OutputType>
-    <Version>7.0.24</Version>
+    <Version>7.0.25</Version>
     <TargetFramework>net7.0</TargetFramework>
     <AssemblyName>Aiursoft.WebTools</AssemblyName>
     <RootNamespace>Aiursoft.WebTools</RootNamespace>
@@ -28,7 +28,7 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Aiursoft.AiurObserver" Version="7.0.12" />
-    <PackageReference Include="Aiursoft.CSTools" Version="7.0.10" />
+    <PackageReference Include="Aiursoft.CSTools" Version="7.0.11" />
     <PackageReference Include="Net.Codecrete.QrCodeGenerator" Version="2.0.4" />
   </ItemGroup>
   <ItemGroup>
