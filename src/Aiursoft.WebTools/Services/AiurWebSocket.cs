@@ -18,6 +18,7 @@ public class AiurWebSocket : AsyncObservable<string>, IConsumer<string>
     }
     
     // ReSharper disable once UnusedMember.Global
+    // ReSharper disable once MemberCanBePrivate.Global
     public async Task Send(string message, CancellationToken token = default)
     {
         try
@@ -96,11 +97,8 @@ public class AiurWebSocket : AsyncObservable<string>, IConsumer<string>
         return Task.CompletedTask;
     }
 
-    public Func<string, Task> Consume => async message =>
+    public Task Consume (string message)
     {
-        if (_ws.State == WebSocketState.Open)
-        {
-            await Send(message);
-        }
-    };
+        return _ws.State == WebSocketState.Open ? Send(message) : Task.CompletedTask;
+    }
 }
