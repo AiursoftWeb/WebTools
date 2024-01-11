@@ -18,7 +18,16 @@ public class WebSocketTests
     public async Task TestWebSocket()
     {
         var port = Network.GetAvailablePort();
-        var app = Extends.App<TestStartup>(Array.Empty<string>(), port);
+        var app = Extends.App<TestStartup>(Array.Empty<string>(), port, builder =>
+        {
+            builder.WebHost.ConfigureKestrel(options =>
+            {
+                // Remove the upload limit from Kestrel. If needed, an upload limit can
+                // be enforced by a reverse proxy server, like IIS.
+                options.Limits.MaxRequestBodySize = null;
+            });
+        });
+        
         await app.StartAsync();
 
         var client = await $"ws://localhost:{port}/".ConnectAsWebSocketServer();

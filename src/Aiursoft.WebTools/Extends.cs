@@ -71,9 +71,10 @@ public static partial class Extends
             new CookieOptions { Expires = DateTimeOffset.UtcNow.AddYears(1) });
     }
 
-    public static WebApplication App<T>(string[] args, int port = -1) where T : IWebStartup, new()
+    public static WebApplication App<T>(string[] args, int port = -1, Action<WebApplicationBuilder>? configureBuilder = null) where T : IWebStartup, new()
     {
         var builder = WebApplication.CreateBuilder(args);
+        configureBuilder?.Invoke(builder);
         if (port > 0)
         {
             builder.WebHost.UseUrls($"http://0.0.0.0:{port}");
