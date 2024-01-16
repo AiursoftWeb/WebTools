@@ -1,6 +1,6 @@
 ﻿using Aiursoft.AiurObserver;
 using Aiursoft.CSTools.Tools;
-using Aiursoft.WebTools.Models;
+using Aiursoft.WebTools.Abstractions.Models;
 using Aiursoft.WebTools.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;

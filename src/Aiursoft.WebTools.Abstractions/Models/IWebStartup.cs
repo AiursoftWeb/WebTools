@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Aiursoft.WebTools.Models;
+namespace Aiursoft.WebTools.Abstractions.Models;
 
 public interface IWebStartup
 {
