@@ -1,5 +1,6 @@
 ﻿using System.Collections.Concurrent;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Filters;
 using System.Net;
 
@@ -49,7 +50,7 @@ public class LimitPerMin : ActionFilterAttribute
             return;
         }
 
-        context.HttpContext.Response.Headers.Add("x-rate-limit-limit", "1m");
-        context.HttpContext.Response.Headers.Add("x-rate-limit-remaining", (_limit - (MemoryDictionary.TryGetValue(key, out value) ? value.count : 0)).ToString());
+        context.HttpContext.Response.Headers.Append("x-rate-limit-limit", "1m");
+        context.HttpContext.Response.Headers.Append("x-rate-limit-remaining", (_limit - (MemoryDictionary.TryGetValue(key, out value) ? value.count : 0)).ToString());
     }
 }
