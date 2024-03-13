@@ -114,7 +114,8 @@ public static partial class Extends
         if (isRunningInDocker)
         {
             Console.WriteLine("Running in Docker. Loading secrets from /run/secrets.");
-            builder.Configuration.Sources.Insert(0, GetDockerSecrets().Result);
+            // Insert docker secret as highest priority.
+            builder.Configuration.Sources.Add(GetDockerSecrets().Result);
             
             Console.WriteLine("All configuration sources:");
             foreach (var source in builder.Configuration.Sources)
