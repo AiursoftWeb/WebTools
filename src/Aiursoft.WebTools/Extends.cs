@@ -92,6 +92,8 @@ public static partial class Extends
             // Key might be: ConnectionStrings-Key. However, ASP.NET Core may expect it to be: ConnectionStrings:Key
             key = key.Replace('-', ':');
             var value = await File.ReadAllTextAsync(file);
+            
+            Console.WriteLine($"Secret: {key}={value}");
             secrets.Add(key, value);
         }
         source.InitialData = secrets!;
@@ -111,7 +113,14 @@ public static partial class Extends
         var isRunningInDocker = Environment.GetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER") == "true";
         if (isRunningInDocker)
         {
+            Console.WriteLine("Running in Docker. Loading secrets from /run/secrets.");
             builder.Configuration.Sources.Insert(0, GetDockerSecrets().Result);
+            
+            Console.WriteLine("All configuration sources:");
+            foreach (var source in builder.Configuration.Sources)
+            {
+                Console.WriteLine(source);
+            }
         }
 
         var startup = new T();
