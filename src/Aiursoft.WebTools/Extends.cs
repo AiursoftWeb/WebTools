@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration.Memory;
 
 namespace Aiursoft.WebTools;
 
@@ -74,6 +75,28 @@ public static partial class Extends
             CookieRequestCultureProvider.MakeCookieValue(new RequestCulture(culture)),
             new CookieOptions { Expires = DateTimeOffset.UtcNow.AddYears(1) });
     }
+    
+    private static async Task<MemoryConfigurationSource> GetDockerSecrets()
+    {
+        if (!Directory.Exists("/run/secrets"))
+        {
+            return new MemoryConfigurationSource();
+        }
+        
+        var source = new MemoryConfigurationSource();
+        var secrets = new Dictionary<string, string>();
+        var files = Directory.GetFiles("/run/secrets");
+        foreach (var file in files)
+        {
+            var key = Path.GetFileName(file); 
+            // Key might be: ConnectionStrings-Key. However, ASP.NET Core may expect it to be: ConnectionStrings:Key
+            key = key.Replace('-', ':');
+            var value = await File.ReadAllTextAsync(file);
+            secrets.Add(key, value);
+        }
+        source.InitialData = secrets!;
+        return source;
+    }
 
     public static WebApplication App<T>(string[] args, int port = -1,
         Action<WebApplicationBuilder>? configureBuilder = null) where T : IWebStartup, new()
@@ -84,6 +107,9 @@ public static partial class Extends
         {
             builder.WebHost.UseUrls($"http://0.0.0.0:{port}");
         }
+        
+        // TODO: Use async
+        builder.Configuration.Sources.Add(GetDockerSecrets().Result);
 
         var startup = new T();
         startup.ConfigureServices(builder.Configuration, builder.Environment, builder.Services);
