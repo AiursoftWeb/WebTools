@@ -108,8 +108,11 @@ public static partial class Extends
             builder.WebHost.UseUrls($"http://0.0.0.0:{port}");
         }
         
-        // TODO: Use async
-        builder.Configuration.Sources.Add(GetDockerSecrets().Result);
+        var isRunningInDocker = Environment.GetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER") == "true";
+        if (isRunningInDocker)
+        {
+            builder.Configuration.Sources.Insert(0, GetDockerSecrets().Result);
+        }
 
         var startup = new T();
         startup.ConfigureServices(builder.Configuration, builder.Environment, builder.Services);
