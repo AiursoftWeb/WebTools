@@ -1,12 +1,13 @@
 ﻿using System.Globalization;
 using System.Text.RegularExpressions;
+using Aiursoft.WebTools.Abstractions;
 using Aiursoft.WebTools.Abstractions.Models;
+using Aiursoft.WebTools.OfficialPlugins;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration.Memory;
 
 namespace Aiursoft.WebTools;
 
@@ -76,30 +77,7 @@ public static partial class Extends
             new CookieOptions { Expires = DateTimeOffset.UtcNow.AddYears(1) });
     }
     
-    private static async Task<MemoryConfigurationSource> GetDockerSecrets()
-    {
-        if (!Directory.Exists("/run/secrets"))
-        {
-            return new MemoryConfigurationSource();
-        }
-        
-        var source = new MemoryConfigurationSource();
-        var secrets = new Dictionary<string, string>();
-        var files = Directory.GetFiles("/run/secrets");
-        foreach (var file in files)
-        {
-            var key = Path.GetFileName(file); 
-            // Key might be: ConnectionStrings-Key. However, ASP.NET Core may expect it to be: ConnectionStrings:Key
-            key = key.Replace('-', ':');
-            var value = await File.ReadAllTextAsync(file);
-            
-            Console.WriteLine($"Secret: {key}={value}");
-            secrets.Add(key, value);
-        }
-        source.InitialData = secrets!;
-        return source;
-    }
-
+    [Obsolete("Please use AppAsync instead. This method will be removed in the future.")]
     public static WebApplication App<T>(string[] args, int port = -1,
         Action<WebApplicationBuilder>? configureBuilder = null) where T : IWebStartup, new()
     {
@@ -109,24 +87,30 @@ public static partial class Extends
         {
             builder.WebHost.UseUrls($"http://0.0.0.0:{port}");
         }
-        
-        var isRunningInDocker = Environment.GetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER") == "true";
-        if (isRunningInDocker)
-        {
-            Console.WriteLine("Running in Docker. Loading secrets from /run/secrets.");
-            // Insert docker secret as highest priority.
-            builder.Configuration.Sources.Add(GetDockerSecrets().Result);
-            
-            Console.WriteLine("All configuration sources:");
-            foreach (var source in builder.Configuration.Sources)
-            {
-                Console.WriteLine(source);
-            }
-        }
-
         var startup = new T();
         startup.ConfigureServices(builder.Configuration, builder.Environment, builder.Services);
         var app = builder.Build();
+        startup.Configure(app);
+        return app;
+    }
+    
+    public static async Task<WebApplication> AppAsync<T>(
+        string[] args, 
+        int port = -1,
+        List<IWebAppPlugin>? plugins = null) where T : IWebStartup, new()
+    {
+        plugins ??= [new DockerPlugin()];
+        var builder = WebApplication.CreateBuilder(args);
+        if (port > 0)
+        {
+            builder.WebHost.UseUrls($"http://0.0.0.0:{port}");
+        }
+
+        await Task.WhenAll(plugins.Where(plugin => plugin.ShouldAddThisPlugin()).Select(plugin => plugin.PreConfigure(builder)));
+        var startup = new T();
+        startup.ConfigureServices(builder.Configuration, builder.Environment, builder.Services);
+        var app = builder.Build();
+        await Task.WhenAll(plugins.Where(plugin => plugin.ShouldAddThisPlugin()).Select(plugin => plugin.AppConfiguration(app)));
         startup.Configure(app);
         return app;
     }
