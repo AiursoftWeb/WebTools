@@ -1,6 +1,7 @@
 ﻿using Aiursoft.WebTools.Abstractions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration.Memory;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Aiursoft.WebTools.OfficialPlugins;
 
@@ -39,6 +40,7 @@ public class DockerPlugin : IWebAppPlugin
     {
         Console.WriteLine("Running in Docker. Loading secrets from /run/secrets.");
         builder.Configuration.Sources.Add(await GetDockerSecrets());
+        builder.Services.AddHealthChecks();
     }
 
     public Task AppConfiguration(WebApplication builder)
