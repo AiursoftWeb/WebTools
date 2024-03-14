@@ -1,5 +1,6 @@
 ﻿using Aiursoft.CSTools.Tools;
 using Aiursoft.WebTools.Abstractions.Models;
+using Aiursoft.WebTools.OfficialPlugins;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -16,16 +17,12 @@ public class StartupTests
     public async Task TestHelloWorld()
     {
         var port = Network.GetAvailablePort();
-        var app = Extends.App<TestStartup>(Array.Empty<string>(), port, builder =>
-        {
-            builder.WebHost.ConfigureKestrel(options =>
-            {
-                // Remove the upload limit from Kestrel. If needed, an upload limit can
-                // be enforced by a reverse proxy server, like IIS.
-                options.Limits.MaxRequestBodySize = null;
-            });
-        });
-        
+        var app = await Extends.AppAsync<TestStartup>(Array.Empty<string>(), port, plugins:
+        [
+            new MaxBodySizePlugin(),
+            new DockerPlugin()
+        ]);
+
         await app.StartAsync();
         var client = new HttpClient();
         var response = await client.GetAsync($"http://localhost:{port}/");
@@ -35,7 +32,8 @@ public class StartupTests
 
 internal class TestStartup : IWebStartup
 {
-    public void ConfigureServices(IConfiguration configuration, IWebHostEnvironment environment, IServiceCollection services)
+    public void ConfigureServices(IConfiguration configuration, IWebHostEnvironment environment,
+        IServiceCollection services)
     {
     }
 
