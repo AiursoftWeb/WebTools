@@ -76,7 +76,7 @@ public static partial class Extends
             CookieRequestCultureProvider.MakeCookieValue(new RequestCulture(culture)),
             new CookieOptions { Expires = DateTimeOffset.UtcNow.AddYears(1) });
     }
-    
+
     [Obsolete("Please use AppAsync instead. This method will be removed in the future.")]
     public static WebApplication App<T>(string[] args, int port = -1,
         Action<WebApplicationBuilder>? configureBuilder = null) where T : IWebStartup, new()
@@ -87,30 +87,44 @@ public static partial class Extends
         {
             builder.WebHost.UseUrls($"http://0.0.0.0:{port}");
         }
+
         var startup = new T();
         startup.ConfigureServices(builder.Configuration, builder.Environment, builder.Services);
         var app = builder.Build();
         startup.Configure(app);
         return app;
     }
-    
+
     public static async Task<WebApplication> AppAsync<T>(
-        string[] args, 
+        string[] args,
         int port = -1,
         List<IWebAppPlugin>? plugins = null) where T : IWebStartup, new()
     {
-        plugins ??= [new DockerPlugin()];
+        plugins ??=
+        [
+            new DockerPlugin(), 
+            new MaxBodySizePlugin(), 
+            new SupportForwardHeadersPlugin()
+        ];
         var builder = WebApplication.CreateBuilder(args);
         if (port > 0)
         {
             builder.WebHost.UseUrls($"http://0.0.0.0:{port}");
         }
 
-        await Task.WhenAll(plugins.Where(plugin => plugin.ShouldAddThisPlugin()).Select(plugin => plugin.PreConfigure(builder)));
+        foreach (var plugin in plugins.Where(plugin => plugin.ShouldAddThisPlugin()))
+        {
+            await plugin.PreConfigure(builder);
+        }
+        
         var startup = new T();
         startup.ConfigureServices(builder.Configuration, builder.Environment, builder.Services);
         var app = builder.Build();
-        await Task.WhenAll(plugins.Where(plugin => plugin.ShouldAddThisPlugin()).Select(plugin => plugin.AppConfiguration(app)));
+        
+        foreach (var plugin in plugins.Where(plugin => plugin.ShouldAddThisPlugin()))
+        {
+            await plugin.AppConfiguration(app);
+        }
         startup.Configure(app);
         return app;
     }
