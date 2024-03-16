@@ -1,4 +1,5 @@
-﻿using Aiursoft.WebTools.Abstractions;
+﻿using Aiursoft.CSTools.Tools;
+using Aiursoft.WebTools.Abstractions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration.Memory;
 using Microsoft.Extensions.DependencyInjection;
@@ -29,7 +30,7 @@ public class DockerPlugin : IWebAppPlugin
             key = key.Replace('-', ':');
             var value = (await File.ReadAllTextAsync(file)).Trim();
             
-            Console.WriteLine($"Secret: {key}={value}");
+            Console.WriteLine($"Secret: {key}={value.SafeSubstring(4)}...");
             secrets.Add(key, value);
         }
         source.InitialData = secrets!;
