@@ -27,7 +27,7 @@ public class DockerPlugin : IWebAppPlugin
             var key = Path.GetFileName(file); 
             // Key might be: ConnectionStrings-Key. However, ASP.NET Core may expect it to be: ConnectionStrings:Key
             key = key.Replace('-', ':');
-            var value = await File.ReadAllTextAsync(file);
+            var value = (await File.ReadAllTextAsync(file)).Trim();
             
             Console.WriteLine($"Secret: {key}={value}");
             secrets.Add(key, value);
