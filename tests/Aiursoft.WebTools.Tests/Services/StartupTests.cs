@@ -1,6 +1,5 @@
 ﻿using Aiursoft.CSTools.Tools;
 using Aiursoft.WebTools.Abstractions.Models;
-using Aiursoft.WebTools.OfficialPlugins;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -17,11 +16,7 @@ public class StartupTests
     public async Task TestHelloWorld()
     {
         var port = Network.GetAvailablePort();
-        var app = await Extends.AppAsync<TestStartup>(Array.Empty<string>(), port, plugins:
-        [
-            new MaxBodySizePlugin(),
-            new DockerPlugin()
-        ]);
+        var app = await Extends.AppAsync<TestStartup>(Array.Empty<string>(), port);
 
         await app.StartAsync();
         var client = new HttpClient();
@@ -39,7 +34,6 @@ internal class TestStartup : IWebStartup
 
     public void Configure(WebApplication app)
     {
-        app.UseWebSockets();
         // Hello world data:
         app.Use(async (context, next) =>
         {
