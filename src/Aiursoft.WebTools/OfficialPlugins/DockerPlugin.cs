@@ -30,7 +30,7 @@ public class DockerPlugin : IWebAppPlugin
             key = key.Replace('-', ':');
             var value = (await File.ReadAllTextAsync(file)).Trim();
             
-            Console.WriteLine($"Secret: {key}={value.SafeSubstring(4)}...");
+            Console.WriteLine($"Secret: {key}={value.SafeSubstring(8)}...");
             secrets.Add(key, value);
         }
         source.InitialData = secrets!;
