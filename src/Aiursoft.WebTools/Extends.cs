@@ -1,5 +1,6 @@
 ﻿using System.Globalization;
 using System.Text.RegularExpressions;
+using Aiursoft.CSTools.Tools;
 using Aiursoft.WebTools.Abstractions;
 using Aiursoft.WebTools.Abstractions.Models;
 using Aiursoft.WebTools.OfficialPlugins;
@@ -104,7 +105,11 @@ public static partial class Extends
         [
             new DockerPlugin(), 
             new MaxBodySizePlugin(), 
-            new SupportForwardHeadersPlugin()
+            
+            // In docker, we trust any proxy.
+            // This is because usually when deployed in docker, we will use a reverse proxy, like Caddy.
+            // Caddy will drop all requests' header: X-Forwarded-For and attach real IP. So we trust it.
+            new SupportForwardHeadersPlugin(trustAnyProxy: EntryExtends.IsInDocker())
         ];
         var builder = WebApplication.CreateBuilder(args);
         if (port > 0)

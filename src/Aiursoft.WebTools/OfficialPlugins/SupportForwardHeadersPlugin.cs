@@ -5,7 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Aiursoft.WebTools.OfficialPlugins;
 
-public class SupportForwardHeadersPlugin : IWebAppPlugin
+public class SupportForwardHeadersPlugin(bool trustAnyProxy = false) : IWebAppPlugin
 {
     public bool ShouldAddThisPlugin()
     {
@@ -24,8 +24,11 @@ public class SupportForwardHeadersPlugin : IWebAppPlugin
             // Only loopback proxies are allowed by default.
             // Clear that restriction because forwarders are enabled by explicit 
             // configuration.
-            options.KnownNetworks.Clear();
-            options.KnownProxies.Clear();
+            if (trustAnyProxy)
+            {
+                options.KnownNetworks.Clear();
+                options.KnownProxies.Clear();
+            }
         });
         return Task.CompletedTask;
     }
