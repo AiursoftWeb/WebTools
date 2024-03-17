@@ -10,7 +10,7 @@ public class DockerPlugin : IWebAppPlugin
 {
     public bool ShouldAddThisPlugin()
     {
-        return Environment.GetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER") == "true";
+        return EntryExtends.IsInDocker();
     }
     
     private static async Task<MemoryConfigurationSource> GetDockerSecrets()
