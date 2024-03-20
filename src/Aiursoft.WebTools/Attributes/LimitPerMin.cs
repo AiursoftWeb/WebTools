@@ -3,19 +3,15 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Filters;
 using System.Net;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
 namespace Aiursoft.WebTools.Attributes;
 
-public class LimitPerMin : ActionFilterAttribute
+public class LimitPerMin(int limit = 30) : ActionFilterAttribute
 {
     public static bool GlobalEnabled = true;
     private static readonly ConcurrentDictionary<string, (int count, DateTime timestamp)> MemoryDictionary = new();
-    private readonly int _limit;
-
-    public LimitPerMin(int limit = 30)
-    {
-        _limit = limit;
-    }
 
     public override void OnActionExecuting(ActionExecutingContext context)
     {
@@ -27,6 +23,7 @@ public class LimitPerMin : ActionFilterAttribute
         var path = context.HttpContext.Request.Path.ToString();
         var ip = context.HttpContext.Connection.RemoteIpAddress?.ToString() ?? string.Empty;
         var key = ip + path;
+        var logger = context.HttpContext.RequestServices.GetService<ILogger<LimitPerMin>>()!;
 
         // Clean up old entries
         foreach (var entry in MemoryDictionary.Where(x => DateTime.UtcNow - x.Value.timestamp > TimeSpan.FromMinutes(1)).ToList())
@@ -44,13 +41,15 @@ public class LimitPerMin : ActionFilterAttribute
         }
 
         // Check limit
-        if (MemoryDictionary.TryGetValue(key, out value) && value.count >= _limit)
+        if (MemoryDictionary.TryGetValue(key, out value) && value.count >= limit)
         {
+            logger.LogWarning($"Rate limit exceeded for {key}");
             context.Result = new StatusCodeResult((int)HttpStatusCode.TooManyRequests);
             return;
         }
-
+        
+        logger.LogInformation($"Rate limit remaining for {key}: {limit - (MemoryDictionary.TryGetValue(key, out value) ? value.count : 0)}");
         context.HttpContext.Response.Headers.Append("x-rate-limit-limit", "1m");
-        context.HttpContext.Response.Headers.Append("x-rate-limit-remaining", (_limit - (MemoryDictionary.TryGetValue(key, out value) ? value.count : 0)).ToString());
+        context.HttpContext.Response.Headers.Append("x-rate-limit-remaining", (limit - (MemoryDictionary.TryGetValue(key, out value) ? value.count : 0)).ToString());
     }
 }
