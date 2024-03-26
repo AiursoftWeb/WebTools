@@ -13,6 +13,19 @@ public class LimitPerMin(int limit = 30) : ActionFilterAttribute
     public static bool GlobalEnabled = true;
     private static readonly ConcurrentDictionary<string, (int count, DateTime timestamp)> MemoryDictionary = new();
 
+    private string GetIp(HttpContext context, ILogger<LimitPerMin> logger)
+    {
+        var tcpIp = context.Connection.RemoteIpAddress?.ToString() ?? string.Empty;
+        var forward = context.Request.Headers["X-Forwarded-For"];
+        if (forward.Count > 0 && !string.IsNullOrWhiteSpace(forward[0]))
+        {
+            logger.LogInformation($"Got an HTTP Forwarded Request. IP: {forward[0]}, TCP IP: {tcpIp}");
+            return forward[0]!;
+        }
+        logger.LogInformation($"Got a direct HTTP Request. IP: {tcpIp}");
+        return tcpIp;
+    }
+    
     public override void OnActionExecuting(ActionExecutingContext context)
     {
         base.OnActionExecuting(context);
@@ -21,9 +34,9 @@ public class LimitPerMin(int limit = 30) : ActionFilterAttribute
             return;
         }
         var path = context.HttpContext.Request.Path.ToString();
-        var ip = context.HttpContext.Connection.RemoteIpAddress?.ToString() ?? string.Empty;
-        var key = ip + path;
         var logger = context.HttpContext.RequestServices.GetService<ILogger<LimitPerMin>>()!;
+        var ip = GetIp(context.HttpContext, logger);
+        var key = ip + path;
 
         // Clean up old entries
         foreach (var entry in MemoryDictionary.Where(x => DateTime.UtcNow - x.Value.timestamp > TimeSpan.FromMinutes(1)).ToList())
