@@ -26,6 +26,7 @@ public class SupportForwardHeadersPlugin(bool trustAnyProxy = false) : IWebAppPl
             // configuration.
             if (trustAnyProxy)
             {
+                Console.WriteLine("This application is configured to trust any proxy.");
                 options.KnownNetworks.Clear();
                 options.KnownProxies.Clear();
             }
