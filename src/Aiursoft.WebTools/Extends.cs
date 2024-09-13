@@ -78,24 +78,6 @@ public static partial class Extends
             new CookieOptions { Expires = DateTimeOffset.UtcNow.AddYears(1) });
     }
 
-    [Obsolete("Please use AppAsync instead. This method will be removed in the future.")]
-    public static WebApplication App<T>(string[] args, int port = -1,
-        Action<WebApplicationBuilder>? configureBuilder = null) where T : IWebStartup, new()
-    {
-        var builder = WebApplication.CreateBuilder(args);
-        configureBuilder?.Invoke(builder);
-        if (port > 0)
-        {
-            builder.WebHost.UseUrls($"http://0.0.0.0:{port}");
-        }
-
-        var startup = new T();
-        startup.ConfigureServices(builder.Configuration, builder.Environment, builder.Services);
-        var app = builder.Build();
-        startup.Configure(app);
-        return app;
-    }
-
     public static async Task<WebApplication> AppAsync<T>(
         string[] args,
         int port = -1,
