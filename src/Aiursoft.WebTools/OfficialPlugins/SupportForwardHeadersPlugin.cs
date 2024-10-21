@@ -26,7 +26,10 @@ public class SupportForwardHeadersPlugin(bool trustAnyProxy = false) : IWebAppPl
             // configuration.
             if (trustAnyProxy)
             {
-                Console.WriteLine("This application is configured to trust any proxy.");
+                Console.WriteLine(@"This application is configured to trust any proxy. 
+This is because this application is deployed in Docker. Usually when an app was deployed in docker, we will use a reverse proxy, like Caddy.
+However it's hard to configure Caddy to attach real IP to the request. So we trust any proxy here.
+If this app's endpoint couldn't be accessed without the proxy, then it's still safe to serve this app.");
                 options.KnownNetworks.Clear();
                 options.KnownProxies.Clear();
             }
