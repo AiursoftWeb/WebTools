@@ -87,6 +87,9 @@ public static partial class Extends
         [
             new DockerPlugin(), 
             new MaxBodySizePlugin(), 
+            new SecureCookiesPlugin(),
+            new HandleRobotsPlugin(),
+            new DataProtectionPlugin(),
             
             // In docker, we trust any proxy.
             // This is because usually when deployed in docker, we will use a reverse proxy, like Caddy.
