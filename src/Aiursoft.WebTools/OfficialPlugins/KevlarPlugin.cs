@@ -5,7 +5,14 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Aiursoft.WebTools.OfficialPlugins;
 
-public class SecureCookiesPlugin : IWebAppPlugin
+/// <summary>
+/// Represents the Kevlar plugin for adding additional security measures to the web application.
+/// </summary>
+/// <remarks>
+/// This plugin configuration adds secure cookie settings and iframe policies to the web application.
+/// </remarks>
+/// <seealso cref="IWebAppPlugin" />
+public class KevlarPlugin : IWebAppPlugin
 {
     public bool ShouldAddThisPlugin()
     {
