@@ -109,12 +109,11 @@ public static partial class Extends
         
         var startup = new T();
         startup.ConfigureServices(builder.Configuration, builder.Environment, builder.Services);
-        var app = builder.Build();
         foreach (var plugin in plugins.Where(plugin => plugin.ShouldAddThisPlugin()))
         {
             await plugin.PostServiceConfigure(builder);
         }
-        
+        var app = builder.Build();
         foreach (var plugin in plugins.Where(plugin => plugin.ShouldAddThisPlugin()))
         {
             await plugin.AppConfiguration(app);
