@@ -101,7 +101,7 @@ public static partial class Extends
 
         foreach (var plugin in plugins.Where(plugin => plugin.ShouldAddThisPlugin()))
         {
-            await plugin.PreConfigure(builder);
+            await plugin.PreServiceConfigure(builder);
         }
         
         var startup = new T();

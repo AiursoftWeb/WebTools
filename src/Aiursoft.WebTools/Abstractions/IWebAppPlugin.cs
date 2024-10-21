@@ -6,7 +6,8 @@ public interface IWebAppPlugin
 {
     bool ShouldAddThisPlugin();
     
-    Task PreConfigure(WebApplicationBuilder builder);
+    Task PreServiceConfigure(WebApplicationBuilder builder);
+    Task PostServiceConfigure(WebApplicationBuilder builder);
     
     Task AppConfiguration(WebApplication builder);
 }

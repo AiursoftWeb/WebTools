@@ -12,7 +12,7 @@ public class SupportForwardHeadersPlugin(bool trustAnyProxy = false) : IWebAppPl
         return true;
     }
 
-    public Task PreConfigure(WebApplicationBuilder builder)
+    public Task PreServiceConfigure(WebApplicationBuilder builder)
     {
         builder.Services.Configure<ForwardedHeadersOptions>(options =>
         {
@@ -31,6 +31,11 @@ public class SupportForwardHeadersPlugin(bool trustAnyProxy = false) : IWebAppPl
                 options.KnownProxies.Clear();
             }
         });
+        return Task.CompletedTask;
+    }
+
+    public Task PostServiceConfigure(WebApplicationBuilder builder)
+    {
         return Task.CompletedTask;
     }
 

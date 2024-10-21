@@ -11,12 +11,17 @@ public class MaxBodySizePlugin : IWebAppPlugin
         return true;
     }
     
-    public Task PreConfigure(WebApplicationBuilder builder)
+    public Task PreServiceConfigure(WebApplicationBuilder builder)
     {
         builder.WebHost.ConfigureKestrel(options =>
         {
             options.Limits.MaxRequestBodySize = null;
         });
+        return Task.CompletedTask;
+    }
+
+    public Task PostServiceConfigure(WebApplicationBuilder builder)
+    {
         return Task.CompletedTask;
     }
 
