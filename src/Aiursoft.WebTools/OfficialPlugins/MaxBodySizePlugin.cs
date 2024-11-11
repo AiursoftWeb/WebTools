@@ -17,6 +17,7 @@ public class MaxBodySizePlugin : IWebAppPlugin
         {
             options.Limits.MaxRequestBodySize = null;
         });
+        Console.WriteLine("MaxBodySizePlugin has been added. The max body size has been set to null.");
         return Task.CompletedTask;
     }
 

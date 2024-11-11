@@ -90,6 +90,7 @@ public static partial class Extends
             new KevlarPlugin(),
             new HandleRobotsPlugin(),
             new DataProtectionPlugin(),
+            new ResponseCompressionPlugin(),
             
             // In docker, we trust any proxy.
             // This is because usually when deployed in docker, we will use a reverse proxy, like Caddy.
