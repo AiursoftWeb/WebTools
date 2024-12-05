@@ -10,6 +10,7 @@ namespace Aiursoft.WebTools.Attributes;
 
 public class LimitPerMin(int limit = 30) : ActionFilterAttribute
 {
+    private readonly int _actualLimit = limit + 1;
     public static bool GlobalEnabled = true;
     private static readonly ConcurrentDictionary<string, (int count, DateTime timestamp)> MemoryDictionary = new();
 
@@ -22,10 +23,15 @@ public class LimitPerMin(int limit = 30) : ActionFilterAttribute
             logger.LogInformation($"Got an HTTP Forwarded Request. IP: {forward[0]}, TCP IP: {tcpIp}");
             return forward[0]!;
         }
-        logger.LogInformation($"Got a direct HTTP Request. IP: {tcpIp}");
+        logger.LogTrace($"Got a direct HTTP Request. IP: {tcpIp}");
         return tcpIp;
     }
     
+    public static void ReleaseAllRecords()
+    {
+        MemoryDictionary.Clear();
+    }
+
     public override void OnActionExecuting(ActionExecutingContext context)
     {
         base.OnActionExecuting(context);
@@ -54,15 +60,26 @@ public class LimitPerMin(int limit = 30) : ActionFilterAttribute
         }
 
         // Check limit
-        if (MemoryDictionary.TryGetValue(key, out value) && value.count >= limit)
+        if (MemoryDictionary.TryGetValue(key, out value) && value.count >= _actualLimit)
         {
             logger.LogWarning($"Rate limit exceeded for {key}");
             context.Result = new StatusCodeResult((int)HttpStatusCode.TooManyRequests);
             return;
         }
+
+        // When the request is not very near to the limit, we log it as trace. Otherwise, we log it as warning.
+        var remaining = _actualLimit - (MemoryDictionary.TryGetValue(key, out value) ? value.count : 0);
+        if (remaining > 10)
+        {
+            logger.LogTrace(
+                $"Rate limit remaining for {key}: {remaining}");
+        }
+        {
+            logger.LogWarning(
+                $"Rate limit remaining for {key}: {remaining}");
+        }
         
-        logger.LogInformation($"Rate limit remaining for {key}: {limit - (MemoryDictionary.TryGetValue(key, out value) ? value.count : 0)}");
         context.HttpContext.Response.Headers.Append("x-rate-limit-limit", "1m");
-        context.HttpContext.Response.Headers.Append("x-rate-limit-remaining", (limit - (MemoryDictionary.TryGetValue(key, out value) ? value.count : 0)).ToString());
+        context.HttpContext.Response.Headers.Append("x-rate-limit-remaining", (_actualLimit - (MemoryDictionary.TryGetValue(key, out value) ? value.count : 0)).ToString());
     }
 }
