@@ -78,6 +78,7 @@ public class LimitPerMin(int limit = 30) : ActionFilterAttribute
             logger.LogTrace(
                 $"Rate limit remaining for {key}: {remaining}");
         }
+        else
         {
             logger.LogWarning(
                 $"Rate limit remaining for {key}: {remaining}");
