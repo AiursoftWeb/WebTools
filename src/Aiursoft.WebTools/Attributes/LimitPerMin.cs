@@ -8,6 +8,10 @@ using Microsoft.Extensions.Logging;
 
 namespace Aiursoft.WebTools.Attributes;
 
+/// <summary>
+/// An attribute that limits the requests per minute. Add this attribute to an ASP.NET Core controller or action method to limit the requests per minute.
+/// </summary>
+/// <param name="limit">The limit of requests per minute. If this is set to 1, then only the first request in a minute will be allowed.</param>
 public class LimitPerMin(int limit = 30) : ActionFilterAttribute
 {
     private readonly int _actualLimit = limit + 1;
