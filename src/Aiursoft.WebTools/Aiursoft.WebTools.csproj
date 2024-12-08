@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>Library</OutputType>
-    <Version>8.0.30</Version>
+    <Version>8.0.31</Version>
     <TargetFramework>net8.0</TargetFramework>
     <AssemblyName>Aiursoft.WebTools</AssemblyName>
     <RootNamespace>Aiursoft.WebTools</RootNamespace>
@@ -28,7 +28,7 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Aiursoft.CSTools" Version="8.0.4" />
-    <PackageReference Include="Net.Codecrete.QrCodeGenerator" Version="2.0.5" />
+    <PackageReference Include="Net.Codecrete.QrCodeGenerator" Version="2.0.6" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Aiursoft.WebTools.Abstractions\Aiursoft.WebTools.Abstractions.csproj" />
