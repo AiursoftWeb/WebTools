@@ -8,7 +8,7 @@
 
 A collection of tools for web development.
 
-## Installation
+## How to install
 
 To install `Aiursoft.WebTools` to your project from [nuget.org](https://www.nuget.org/packages/Aiursoft.WebTools/):
 
