@@ -12,24 +12,26 @@ public class DockerPlugin : IWebAppPlugin
     {
         return EntryExtends.IsInDocker();
     }
-    
+
     private static async Task<MemoryConfigurationSource> GetDockerSecrets()
     {
         if (!Directory.Exists("/run/secrets"))
         {
             return new MemoryConfigurationSource();
         }
-        
+
         var source = new MemoryConfigurationSource();
         var secrets = new Dictionary<string, string>();
         var files = Directory.GetFiles("/run/secrets");
         foreach (var file in files)
         {
-            var key = Path.GetFileName(file); 
+            var key = Path.GetFileName(file);
             // Key might be: ConnectionStrings-Key. However, ASP.NET Core may expect it to be: ConnectionStrings:Key
             key = key.Replace('-', ':');
+            // Key might be: ConnectionStrings__Key. However, ASP.NET Core may expect it to be: ConnectionStrings:Key
+            key = key.Replace("__", ":");
             var value = (await File.ReadAllTextAsync(file)).Trim();
-            
+
             Console.WriteLine($"Secret: {key}={value.SafeSubstring(8)}...");
             secrets.Add(key, value);
         }
