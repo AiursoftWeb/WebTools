@@ -85,13 +85,14 @@ public static partial class Extends
     {
         plugins ??=
         [
-            new DockerPlugin(), 
-            new MaxBodySizePlugin(), 
+            new DockerPlugin(),
+            new MaxBodySizePlugin(),
             new KevlarPlugin(),
             new HandleRobotsPlugin(),
             new DataProtectionPlugin(),
             new ResponseCompressionPlugin(),
-            
+            new LocalizationPlugin(),
+
             // In docker, we trust any proxy.
             // This is because usually when deployed in docker, we will use a reverse proxy, like Caddy.
             // Caddy will drop all requests' header: X-Forwarded-For and attach real IP. So we trust it.
@@ -107,7 +108,7 @@ public static partial class Extends
         {
             await plugin.PreServiceConfigure(builder);
         }
-        
+
         var startup = new T();
         startup.ConfigureServices(builder.Configuration, builder.Environment, builder.Services);
         foreach (var plugin in plugins.Where(plugin => plugin.ShouldAddThisPlugin()))
