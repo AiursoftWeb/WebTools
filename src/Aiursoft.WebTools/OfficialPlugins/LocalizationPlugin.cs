@@ -3,6 +3,7 @@ using Aiursoft.WebTools.Abstractions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Localization;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Primitives;
 
 namespace Aiursoft.WebTools.OfficialPlugins;
@@ -54,6 +55,7 @@ public class LocalizationPlugin : IWebAppPlugin
 
     public Task PostServiceConfigure(WebApplicationBuilder builder)
     {
+        builder.Services.AddLocalization(options => options.ResourcesPath = "Resources");
         return Task.CompletedTask;
     }
 
