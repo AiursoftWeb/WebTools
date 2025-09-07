@@ -35,9 +35,10 @@ public class KevlarPlugin : IWebAppPlugin
             //   Hackers can use CSRF attacks to steal your cookies.
             // Lax: Indicates the client should send the cookie with "same-site" requests, and with "cross-site" top-level navigations.
             //   This means that the cookie will be sent with same-site requests, and with cross-site requests that are top-level navigations. Better than None.
+            //   If an app need to integrate with OpenID Connect, then setting to Lax is recommended.
             // Strict: Indicates the client should only send the cookie with "same-site" requests.
             //   This is the most secure option which means only send the cookie with same-site requests. Suggested if the front-end and back-end are deployed under the same domain.
-            options.Cookie.SameSite = SameSiteMode.Strict;
+            options.Cookie.SameSite = SameSiteMode.Lax;
             // Can be: SameAsRequest, Always, None
             // SameAsRequest: If the URI that provides the cookie is HTTPS, then the cookie will only be returned to the server on.
             //   If the application is deployed under HTTPS, then the cookie will only be returned to the server on subsequent HTTPS requests.
