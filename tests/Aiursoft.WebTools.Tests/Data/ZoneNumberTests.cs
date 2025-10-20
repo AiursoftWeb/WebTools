@@ -1,5 +1,4 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Aiursoft.WebTools.Data;
+﻿using Aiursoft.WebTools.Data;
 
 namespace Aiursoft.WebTools.Tests.Data
 {
@@ -17,7 +16,7 @@ namespace Aiursoft.WebTools.Tests.Data
             // Assert
             Assert.IsNotNull(numbers);
             Assert.IsInstanceOfType(numbers, typeof(Dictionary<string, int>));
-            Assert.IsTrue(numbers.Count > 0);
+            Assert.IsNotEmpty(numbers);
         }
 
         [TestMethod]
