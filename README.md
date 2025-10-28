@@ -4,7 +4,7 @@
 [![Pipeline stat](https://gitlab.aiursoft.com/aiursoft/webtools/badges/master/pipeline.svg)](https://gitlab.aiursoft.com/aiursoft/webtools/-/pipelines)
 [![Test Coverage](https://gitlab.aiursoft.com/aiursoft/webtools/badges/master/coverage.svg)](https://gitlab.aiursoft.com/aiursoft/webtools/-/pipelines)
 [![NuGet version (Aiursoft.WebTools)](https://img.shields.io/nuget/v/Aiursoft.WebTools.svg)](https://www.nuget.org/packages/Aiursoft.WebTools/)
-[![ManHours](https://manhours.aiursoft.cn/r/gitlab.aiursoft.com/aiursoft/WebTools.svg)](https://gitlab.aiursoft.com/aiursoft/WebTools/-/commits/master?ref_type=heads)
+[![ManHours](https://manhours.aiursoft.com/r/gitlab.aiursoft.com/aiursoft/WebTools.svg)](https://gitlab.aiursoft.com/aiursoft/WebTools/-/commits/master?ref_type=heads)
 
 A collection of tools for web development.
 
