@@ -16,20 +16,23 @@ public class SupportForwardHeadersPlugin(bool trustAnyProxy = false) : IWebAppPl
     {
         builder.Services.Configure<ForwardedHeadersOptions>(options =>
         {
+            Console.WriteLine("SupportForwardHeadersPlugin has been added. The forward headers X-Forwarded-For, X-Forwarded-Proto and X-Forwarded-Host will be supported.");
             options.ForwardedHeaders =
                 ForwardedHeaders.XForwardedFor |
                 ForwardedHeaders.XForwardedProto |
                 ForwardedHeaders.XForwardedHost;
-            
+
             // Only loopback proxies are allowed by default.
-            // Clear that restriction because forwarders are enabled by explicit 
+            // Clear that restriction because forwarders are enabled by explicit
             // configuration.
             if (trustAnyProxy)
             {
-                Console.WriteLine(@"This application is configured to trust any proxy. 
+                Console.ForegroundColor = ConsoleColor.Yellow;
+                Console.WriteLine(@"This application is configured to trust any reverse proxy.
 This is because this application is deployed in Docker. Usually when an app was deployed in docker, we will use a reverse proxy, like Caddy.
-However it's hard to configure Caddy to attach real IP to the request. So we trust any proxy here.
+However it's hard to setup the internal network between Caddy and this app. So we trust any proxy here.
 If this app's endpoint couldn't be accessed without the proxy, then it's still safe to serve this app.");
+                Console.ResetColor();
                 options.KnownNetworks.Clear();
                 options.KnownProxies.Clear();
             }

@@ -92,6 +92,7 @@ public static partial class Extends
             new DataProtectionPlugin(),
             new ResponseCompressionPlugin(),
             new LocalizationPlugin(),
+            new AlwaysAddMemoryCachePlugin(),
 
             // In docker, we trust any proxy.
             // This is because usually when deployed in docker, we will use a reverse proxy, like Caddy.

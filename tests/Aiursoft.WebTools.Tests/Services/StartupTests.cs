@@ -6,8 +6,11 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+
+[assembly:DoNotParallelize]
 
 namespace Aiursoft.WebTools.Tests.Services;
 
@@ -67,16 +70,17 @@ public class RateLimitTest
             var response = await client.GetAsync($"http://localhost:{port}/");
             Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
         }
-        
+
         // The 21st request should be blocked.
         var lastResponse = await client.GetAsync($"http://localhost:{port}/");
         Assert.AreEqual(HttpStatusCode.TooManyRequests, lastResponse.StatusCode);
-        
-        LimitPerMin.ReleaseAllRecords();
+
+        var cache = app.Services.GetRequiredService<IMemoryCache>() as MemoryCache;
+        cache!.Clear();
         var responseAfterRelease = await client.GetAsync($"http://localhost:{port}/");
         Assert.AreEqual(HttpStatusCode.OK, responseAfterRelease.StatusCode);
     }
-    
+
     [TestMethod]
     public async Task TestRateLimitOnlyOne()
     {
@@ -87,10 +91,10 @@ public class RateLimitTest
         var client = new HttpClient();
         var firstResponse = await client.GetAsync($"http://localhost:{port}/only-one");
         Assert.AreEqual(HttpStatusCode.OK, firstResponse.StatusCode);
-        
+
         var secondResponse = await client.GetAsync($"http://localhost:{port}/only-one");
         Assert.AreEqual(HttpStatusCode.TooManyRequests, secondResponse.StatusCode);
-        
+
         LimitPerMin.GlobalEnabled = false;
         var thirdResponse = await client.GetAsync($"http://localhost:{port}/only-one");
         Assert.AreEqual(HttpStatusCode.OK, thirdResponse.StatusCode);
@@ -102,6 +106,7 @@ public class TestStartupForRateLimit : IWebStartup
     public void ConfigureServices(IConfiguration configuration, IWebHostEnvironment environment,
         IServiceCollection services)
     {
+        services.AddMemoryCache();
         services.AddControllers().AddApplicationPart(typeof(TestStartupForRateLimit).Assembly);
     }
 
@@ -120,7 +125,7 @@ public class TestController : ControllerBase
     {
         return "Hello World!";
     }
-    
+
     [HttpGet]
     [LimitPerMin(1)]
     [Route("/only-one")]

@@ -24,14 +24,14 @@ public class DataProtectionPlugin : IWebAppPlugin
         // By default, this plugin uses /data/Keys as the keys path.
         // To override the behavior, simply register the IDataProtectionProvider service in your app. (This plugin will not override it.)
         var inDocker = EntryExtends.IsInDocker();
-        var keysPath = inDocker ? 
+        var keysPath = inDocker ?
             Path.Combine("/data", ".aspnet", "DataProtection-Keys") :
             Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), ".aspnet", "DataProtection-Keys");
         if (!Directory.Exists(keysPath))
         {
             Directory.CreateDirectory(keysPath);
         }
-        
+
         var applicationName = Assembly.GetEntryAssembly()!.GetName().Name!;
         Console.WriteLine($"Created directory: {keysPath} to persist data protection keys for application: {applicationName}.");
         builder.Services.AddDataProtection()
