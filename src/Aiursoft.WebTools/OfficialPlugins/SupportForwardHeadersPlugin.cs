@@ -33,7 +33,7 @@ This is because this application is deployed in Docker. Usually when an app was 
 However it's hard to setup the internal network between Caddy and this app. So we trust any proxy here.
 If this app's endpoint couldn't be accessed without the proxy, then it's still safe to serve this app.");
                 Console.ResetColor();
-                options.KnownNetworks.Clear();
+                options.KnownIPNetworks.Clear();
                 options.KnownProxies.Clear();
             }
         });
