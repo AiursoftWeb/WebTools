@@ -1,12 +1,13 @@
 using System.Net;
 using Aiursoft.CSTools.Tools;
 using Aiursoft.WebTools.Abstractions.Models;
+using Aiursoft.WebTools.Attributes;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Aiursoft.WebTools.Tests.Services;
 
@@ -127,8 +128,12 @@ public class IntegrationTests
     {
         var response = await _client.GetAsync($"http://localhost:{_port}/no-cache");
         Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
-        CollectionAssert.Contains(response.Headers.CacheControl.ToString().Split(','), "no-cache");
-        CollectionAssert.Contains(response.Content.Headers.Expires.ToString().Split(','), "-1");
+        var cacheControl = response.Headers.CacheControl?.ToString();
+        Assert.IsNotNull(cacheControl);
+        CollectionAssert.Contains(cacheControl.Split(',').Select(x => x.Trim()).ToList(), "no-cache");
+        
+        Assert.IsTrue(response.Content.Headers.Contains("Expires"));
+        Assert.AreEqual("-1", response.Content.Headers.GetValues("Expires").First());
     }
 
     [TestMethod]
@@ -137,11 +142,6 @@ public class IntegrationTests
         // Test with HTTP request (should fail)
         var response = await _client.GetAsync($"http://localhost:{_port}/websocket-only");
         Assert.AreEqual(HttpStatusCode.BadRequest, response.StatusCode);
-
-        // Test with WebSocket request (mocking IsWebSocketRequest is hard in integration test without real WS client, 
-        // but we can at least verify the 400 for non-WS)
-        // To test success, we would need to actually initiate a WS handshake.
-        // For now, ensuring it blocks non-WS is the key logic of the attribute.
     }
 }
 
@@ -149,58 +149,75 @@ public class TestStartupForIntegration : IWebStartup
 {
     public void ConfigureServices(IConfiguration configuration, IWebHostEnvironment environment, IServiceCollection services)
     {
-        services.AddControllers();
+        services.AddControllers().AddApplicationPart(typeof(TestStartupForIntegration).Assembly);
     }
 
     public void Configure(WebApplication app)
     {
-        app.UseRouting();
-        app.UseEndpoints(endpoints =>
-        {
-            endpoints.MapGet("/large-text", async context =>
-            {
-                var text = new string('a', 10000); // 10KB
-                context.Response.ContentType = "text/plain";
-                await context.Response.WriteAsync(text);
-            });
+        app.MapControllers();
+    }
+}
 
-            endpoints.MapGet("/no-cache", [Aiursoft.WebTools.Attributes.AiurNoCache] async (context) => 
-            {
-                await context.Response.WriteAsync("No Cache");
-            });
+public class IntegrationTestController : ControllerBase
+{
+    [HttpGet]
+    [Route("large-text")]
+    public async Task LargeText()
+    {
+        var text = new string('a', 10000); // 10KB
+        Response.ContentType = "text/plain";
+        await Response.WriteAsync(text);
+    }
 
-            endpoints.MapGet("/websocket-only", [Aiursoft.WebTools.Attributes.EnforceWebSocket] async (context) =>
-            {
-                await context.Response.WriteAsync("WebSocket");
-            });
+    [HttpGet]
+    [Route("no-cache")]
+    [AiurNoCache]
+    public async Task NoCache()
+    {
+        await Response.WriteAsync("No Cache");
+    }
 
-            endpoints.MapGet("/info", async context =>
-            {
-                var isMobile = context.Request.IsMobileBrowser();
-                var isWeChat = context.Request.IsWeChat();
-                var isIos = context.Request.IsIos();
-                var isAndroid = context.Request.IsAndroid();
-                await context.Response.WriteAsync($"Mobile: {isMobile}, WeChat: {isWeChat}, iPhone: {isIos}, Android: {isAndroid}");
-            });
+    [HttpGet]
+    [Route("websocket-only")]
+    [EnforceWebSocket]
+    public async Task WebSocketOnly()
+    {
+        await Response.WriteAsync("WebSocket");
+    }
 
-            endpoints.MapGet("/culture", async context =>
-            {
-                var culture = System.Globalization.CultureInfo.CurrentCulture.Name;
-                await context.Response.WriteAsync(culture);
-            });
+    [HttpGet]
+    [Route("info")]
+    public async Task Info()
+    {
+        var isMobile = Request.IsMobileBrowser();
+        var isWeChat = Request.IsWeChat();
+        var isIos = Request.IsIos();
+        var isAndroid = Request.IsAndroid();
+        await Response.WriteAsync($"Mobile: {isMobile}, WeChat: {isWeChat}, iPhone: {isIos}, Android: {isAndroid}");
+    }
 
-            endpoints.MapGet("/ip", async context =>
-            {
-                var ip = context.Connection.RemoteIpAddress?.ToString();
-                await context.Response.WriteAsync(ip ?? "unknown");
-            });
+    [HttpGet]
+    [Route("culture")]
+    public async Task Culture()
+    {
+        var culture = System.Globalization.CultureInfo.CurrentCulture.Name;
+        await Response.WriteAsync(culture);
+    }
 
-            endpoints.MapPost("/upload", async context =>
-            {
-                // Read the whole body
-                await context.Request.Body.CopyToAsync(Stream.Null, CancellationToken.None);
-                await context.Response.WriteAsync("OK");
-            });
-        });
+    [HttpGet]
+    [Route("ip")]
+    public async Task Ip()
+    {
+        var ip = HttpContext.Connection.RemoteIpAddress?.ToString();
+        await Response.WriteAsync(ip ?? "unknown");
+    }
+
+    [HttpPost]
+    [Route("upload")]
+    public async Task Upload()
+    {
+        // Read the whole body
+        await Request.Body.CopyToAsync(Stream.Null, CancellationToken.None);
+        await Response.WriteAsync("OK");
     }
 }
