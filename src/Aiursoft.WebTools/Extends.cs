@@ -111,6 +111,7 @@ public static partial class Extends
         }
 
         var startup = new T();
+        startup.ConfigureLogging(builder.Configuration, builder.Environment, builder.Logging);
         startup.ConfigureServices(builder.Configuration, builder.Environment, builder.Services);
         foreach (var plugin in plugins.Where(plugin => plugin.ShouldAddThisPlugin()))
         {
