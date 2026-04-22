@@ -17,6 +17,13 @@ namespace Aiursoft.WebTools.Tests.Services;
 [TestClass]
 public class StartupTests
 {
+    private static readonly Lazy<IServiceProvider> _servicesLazy = new(() =>
+        new ServiceCollection()
+            .AddHttpClient()
+            .BuildServiceProvider());
+
+    private static IHttpClientFactory ClientFactory => _servicesLazy.Value.GetRequiredService<IHttpClientFactory>();
+
     [TestMethod]
     public async Task TestHelloWorld()
     {
@@ -24,7 +31,7 @@ public class StartupTests
         var app = await Extends.AppAsync<TestStartup>([], port);
 
         await app.StartAsync();
-        var client = new HttpClient();
+        var client = ClientFactory.CreateClient();
         var response = await client.GetAsync($"http://localhost:{port}/");
         Assert.AreEqual("Hello World!", await response.Content.ReadAsStringAsync());
     }
@@ -57,6 +64,13 @@ internal class TestStartup : IWebStartup
 [TestClass]
 public class RateLimitTest
 {
+    private static readonly Lazy<IServiceProvider> _servicesLazy = new(() =>
+        new ServiceCollection()
+            .AddHttpClient()
+            .BuildServiceProvider());
+
+    private static IHttpClientFactory ClientFactory => _servicesLazy.Value.GetRequiredService<IHttpClientFactory>();
+
     [TestMethod]
     public async Task TestRateLimit()
     {
@@ -64,7 +78,7 @@ public class RateLimitTest
         var app = await Extends.AppAsync<TestStartupForRateLimit>([], port);
 
         await app.StartAsync();
-        var client = new HttpClient();
+        var client = ClientFactory.CreateClient();
         for (var i = 0; i < 20; i++) // Make 20 requests, all should be OK.
         {
             var response = await client.GetAsync($"http://localhost:{port}/");
@@ -88,7 +102,7 @@ public class RateLimitTest
         var app = await Extends.AppAsync<TestStartupForRateLimit>([], port);
 
         await app.StartAsync();
-        var client = new HttpClient();
+        var client = ClientFactory.CreateClient();
         var firstResponse = await client.GetAsync($"http://localhost:{port}/only-one");
         Assert.AreEqual(HttpStatusCode.OK, firstResponse.StatusCode);
 
