@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Filters;
 using System.Net;
+using Aiursoft.CSTools.Tools;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Caching.Memory; // 1. 引入 IMemoryCache
@@ -49,6 +50,11 @@ public class LimitPerMin(int limit = 30) : ActionFilterAttribute
     {
         base.OnActionExecuting(context);
         if (!GlobalEnabled)
+        {
+            return;
+        }
+
+        if (EntryExtends.IsInUnitTests())
         {
             return;
         }
