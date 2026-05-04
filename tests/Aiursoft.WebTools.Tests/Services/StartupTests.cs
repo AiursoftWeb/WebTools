@@ -64,6 +64,12 @@ internal class TestStartup : IWebStartup
 [TestClass]
 public class RateLimitTest
 {
+    [TestInitialize]
+    public void TestInitialize()
+    {
+        LimitPerMin.KeepFunctioningInUnitTest = true;
+    }
+
     private static readonly Lazy<IServiceProvider> _servicesLazy = new(() =>
         new ServiceCollection()
             .AddHttpClient()

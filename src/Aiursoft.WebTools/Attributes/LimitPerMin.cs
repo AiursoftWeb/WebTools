@@ -5,6 +5,7 @@ using System.Net;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Caching.Memory;
+using Aiursoft.CSTools.Tools;
 
 namespace Aiursoft.WebTools.Attributes;
 
@@ -16,6 +17,7 @@ public class LimitPerMin(int limit = 30) : ActionFilterAttribute
 {
     private readonly int _actualLimit = limit + 1;
     public static bool GlobalEnabled = true;
+    public static bool KeepFunctioningInUnitTest = false;
 
     /// <summary>
     /// A private helper class to implement atomic increment in IMemoryCache.
@@ -49,6 +51,11 @@ public class LimitPerMin(int limit = 30) : ActionFilterAttribute
     {
         base.OnActionExecuting(context);
         if (!GlobalEnabled)
+        {
+            return;
+        }
+
+        if (EntryExtends.IsInUnitTests() && !KeepFunctioningInUnitTest)
         {
             return;
         }
