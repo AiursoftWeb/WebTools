@@ -5,10 +5,12 @@ using Aiursoft.WebTools.Attributes;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 
 [assembly:DoNotParallelize]
 
@@ -34,6 +36,18 @@ public class StartupTests
         var client = ClientFactory.CreateClient();
         var response = await client.GetAsync($"http://localhost:{port}/");
         Assert.AreEqual("Hello World!", await response.Content.ReadAsStringAsync());
+    }
+
+    [TestMethod]
+    public async Task TestMaxBodySizePluginSetsFormOptionsLimit()
+    {
+        var port = Network.GetAvailablePort();
+        var app = await Extends.AppAsync<TestStartup>([], port);
+
+        var formOptions = app.Services.GetRequiredService<IOptions<FormOptions>>().Value;
+        Assert.AreEqual(2L * 1024 * 1024 * 1024, formOptions.MultipartBodyLengthLimit);
+
+        await app.StopAsync();
     }
 }
 
