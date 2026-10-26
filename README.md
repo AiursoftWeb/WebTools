@@ -59,6 +59,37 @@ public class Startup : IWebStartup
 }
 ```
 
+## Optional application-wide rate limiting
+
+Register the optional middleware in your startup and explicitly enable it in configuration.
+It is disabled by default; existing `LimitPerMin` attributes keep their per-path behavior.
+
+```csharp
+// ConfigureServices:
+services.AddMacroRateLimiting(options => configuration.GetSection("MacroRateLimit").Bind(options));
+
+// Configure: after forwarded headers and static files, before routing, authentication and controllers.
+app.UseStaticFiles();
+app.UseMacroRateLimiting();
+app.UseRouting();
+```
+
+```json
+"MacroRateLimit": {
+  "Enabled": true,
+  "PermitLimit": 300,
+  "WindowSeconds": 60,
+  "PerIpConcurrencyLimit": 4,
+  "ConcurrencyLimit": 32
+}
+```
+
+Each client IP shares its request budget across all URLs reaching the middleware. Separate limits
+cap simultaneous requests per IP and per application process; excess requests receive `429` with
+`Retry-After`, without queuing or executing controllers. It uses the validated `RemoteIpAddress`;
+configure trusted proxies appropriately. Limits are per process, not shared between replicas or
+applications. Configuration changes take effect after restarting the application.
+
 ## QRCode generation
 
 We provide a QRCode generation service for you to generate QRCode image from a string.
