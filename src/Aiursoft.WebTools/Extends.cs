@@ -47,17 +47,17 @@ public static partial class Extends
     public static bool IsWeChat(this HttpRequest request)
     {
         // ReSharper disable once StringLiteralTypo
-        return request.UserAgent()?.ToLower().Contains("micromessenger") ?? false;
+        return request.UserAgent()?.Contains("micromessenger", StringComparison.OrdinalIgnoreCase) ?? false;
     }
 
     public static bool IsIos(this HttpRequest request)
     {
-        return request.UserAgent()?.ToLower().Contains("iphone") ?? false;
+        return request.UserAgent()?.Contains("iphone", StringComparison.OrdinalIgnoreCase) ?? false;
     }
 
     public static bool IsAndroid(this HttpRequest request)
     {
-        return request.UserAgent()?.ToLower().Contains("android") ?? false;
+        return request.UserAgent()?.Contains("android", StringComparison.OrdinalIgnoreCase) ?? false;
     }
 
     public static string? UserAgent(this HttpRequest request)
