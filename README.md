@@ -1,5 +1,7 @@
 # Aiursoft WebTools
 
+<a name="aiursoft-webtools"></a>
+
 [![MIT licensed](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/AiursoftWeb/webtools/blob/master/LICENSE)
 [![Pipeline stat](https://badge-proxy.aiursoft.com/aiursoft/webtools/badges/master/pipeline.svg)](https://gitlab.aiursoft.com/aiursoft/webtools/-/pipelines)
 [![Test Coverage](https://badge-proxy.aiursoft.com/aiursoft/webtools/badges/master/coverage.svg)](https://gitlab.aiursoft.com/aiursoft/webtools/-/pipelines)
@@ -9,7 +11,21 @@
 
 A collection of tools for web development.
 
-## How to install
+## Overview
+
+### What is WebTools?
+
+<a name="features"></a>
+
+* Easier application startup
+* QRCode generation
+* HttpContext extensions
+
+## Installation
+
+Add the package to your .NET project:
+
+<a name="how-to-install"></a>
 
 To install `Aiursoft.WebTools` to your project from [nuget.org](https://www.nuget.org/packages/Aiursoft.WebTools/):
 
@@ -17,19 +33,18 @@ To install `Aiursoft.WebTools` to your project from [nuget.org](https://www.nuge
 dotnet add package Aiursoft.WebTools
 ```
 
-## Features
+Requires .NET 10 or later.
 
-* Easier application startup
-* QRCode generation
-* HttpContext extensions
+## Usage
 
-## Easier application startup
+<a name="easier-application-startup"></a>
 
 It is a common practice to create a `Program` class and a `Startup` class in a ASP.NET Core application. However, it is a little bit annoying to write the same code again and again. So we created a `Extends` class to help you to write less code.
 
 ```csharp
 using System.Reflection;
-using Aiursoft.WebTools.Models;
+using Aiursoft.WebTools;
+using Aiursoft.WebTools.Abstractions.Models;
 
 namespace DemoApp;
 
@@ -37,7 +52,7 @@ public class Program
 {
     public static async Task Main(string[] args)
     {
-        var app = Extends.App<Startup>(args);
+        var app = await Extends.AppAsync<Startup>(args);
         await app.RunAsync();
     }
 }
@@ -59,7 +74,33 @@ public class Startup : IWebStartup
 }
 ```
 
-## Optional application-wide rate limiting
+### QRCode generation
+
+<a name="qrcode-generation"></a>
+
+We provide a QRCode generation service for you to generate QRCode image from a string.
+
+```csharp
+var base64 = _qrCodeService.ToQRCodeBase64(somestring);
+```
+
+### HttpContext extensions
+
+<a name="httpcontext-extensions"></a>
+
+We provide some useful extensions for `HttpContext`:
+
+```csharp
+var isWeChat = HttpContext.Request.IsWeChat();
+var isMobile = HttpContext.Request.IsMobileBrowser();
+var allowTrack = HttpContext.AllowTrack();
+```
+
+## Configuration
+
+**Optional application-wide rate limiting**
+
+<a name="optional-application-wide-rate-limiting"></a>
 
 Register the optional middleware in your startup and explicitly enable it in configuration.
 It is disabled by default; existing `LimitPerMin` attributes keep their per-path behavior.
@@ -75,12 +116,14 @@ app.UseRouting();
 ```
 
 ```json
+{
 "MacroRateLimit": {
   "Enabled": true,
   "PermitLimit": 300,
   "WindowSeconds": 60,
   "PerIpConcurrencyLimit": 4,
   "ConcurrencyLimit": 32
+}
 }
 ```
 
@@ -90,28 +133,30 @@ cap simultaneous requests per IP and per application process; excess requests re
 configure trusted proxies appropriately. Limits are per process, not shared between replicas or
 applications. Configuration changes take effect after restarting the application.
 
-## QRCode generation
+## Development
 
-We provide a QRCode generation service for you to generate QRCode image from a string.
+Install the [.NET 10 SDK](https://dotnet.microsoft.com/download/dotnet/10.0).
 
-```csharp
-var base64 = _qrCodeService.ToQRCodeBase64(somestring);
+From the repository root, restore, build and test:
+
+```bash
+dotnet restore Aiursoft.WebTools.sln
+dotnet build Aiursoft.WebTools.sln --no-restore
+dotnet test Aiursoft.WebTools.sln --no-restore
 ```
 
-## HttpContext extensions
-
-We provide some useful extensions for `HttpContext`:
-
-```csharp
-var isWeChat = HttpContext.IsWeChat();
-var isMobile = HttpContext.IsMobileBrowser();
-var allowTrack = HttpContext.AllowTrack();
-```
+Run `./lint.sh` for the existing static checks.
 
 ## How to contribute
 
+<a name="how-to-contribute"></a>
+
 There are many ways to contribute to the project: logging bugs, submitting pull requests, reporting issues, and creating suggestions.
 
-Even if you with push rights on the repository, you should create a personal fork and create feature branches there when you need them. This keeps the main repository clean and your workflow cruft out of sight.
+Even if you have push rights on the repository, you should create a personal fork and create feature branches there when you need them. This keeps the main repository clean and your workflow cruft out of sight.
 
 We're also interested in your feedback on the future of this project. You can submit a suggestion or feature request through the issue tracker. To make this process more effective, we're asking that these include more information to help define them more clearly.
+
+## License
+
+Licensed under the [MIT License](https://github.com/AiursoftWeb/webtools/blob/master/LICENSE).
