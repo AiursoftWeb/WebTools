@@ -3,7 +3,6 @@ using Aiursoft.WebTools.Abstractions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Localization;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Primitives;
 
@@ -41,7 +40,8 @@ public class LocalizationPlugin : IWebAppPlugin
         { "id-ID", "Bahasa Indonesia (Indonesia)" },
         { "fi-FI", "Suomi (Suomi)" },
         { "hi-IN", "हिन्दी (भारत)" },
-        { "el-GR", "Ελληνικά (Ελλάδα)" }
+        { "el-GR", "Ελληνικά (Ελλάδα)" },
+        { "hr-HR", "Hrvatski" }
     };
 
     public bool ShouldAddThisPlugin()
@@ -57,21 +57,12 @@ public class LocalizationPlugin : IWebAppPlugin
     public Task PostServiceConfigure(WebApplicationBuilder builder)
     {
         builder.Services.AddLocalization(options => options.ResourcesPath = "Resources");
-        var cultures = new Dictionary<string, string>(SupportedCultures);
-        if (builder.Configuration.GetValue<bool>("Localization:EnableCroatian"))
-        {
-            cultures.Add("hr-HR", "Hrvatski");
-        }
-        builder.Services.AddKeyedSingleton<IReadOnlyDictionary<string, string>>(
-            typeof(LocalizationPlugin), cultures.AsReadOnly());
         return Task.CompletedTask;
     }
 
     public Task AppConfiguration(WebApplication builder)
     {
-        var applicationCultures = builder.Services.GetRequiredKeyedService<IReadOnlyDictionary<string, string>>(
-            typeof(LocalizationPlugin));
-        var supportedCultures = applicationCultures.Keys.Select(c => new CultureInfo(c)).ToList();
+        var supportedCultures = SupportedCultures.Select(c => new CultureInfo(c.Key)).ToList();
         var defaultLanguage = supportedCultures.First();
 
         var localizationOptions = new RequestLocalizationOptions
@@ -84,21 +75,19 @@ public class LocalizationPlugin : IWebAppPlugin
             RequestCultureProviders =
             [
                 new CookieRequestCultureProvider(),
-                new StartsWithAcceptLanguageProvider { CultureCodes = applicationCultures.Keys }
+                new StartsWithAcceptLanguageProvider()
             ]
         };
 
         builder.UseRequestLocalization(localizationOptions);
         Console.WriteLine("Localization plugin has been added. Supported languages: " +
-                          string.Join(", ", applicationCultures.Values));
+                          string.Join(", ", SupportedCultures.Values));
         return Task.CompletedTask;
     }
 }
 
 public class StartsWithAcceptLanguageProvider : RequestCultureProvider
 {
-    internal IEnumerable<string> CultureCodes { get; init; } = LocalizationPlugin.SupportedCultures.Keys;
-
     public override Task<ProviderCultureResult?> DetermineProviderCultureResult(HttpContext httpContext)
     {
         if (httpContext == null)
@@ -120,7 +109,7 @@ public class StartsWithAcceptLanguageProvider : RequestCultureProvider
             if (string.IsNullOrEmpty(pureLang))
                 continue;
 
-            foreach (var result in from supported in CultureCodes
+            foreach (var result in from supported in LocalizationPlugin.SupportedCultures.Keys
                      where supported.StartsWith(pureLang, StringComparison.OrdinalIgnoreCase)
                      select new ProviderCultureResult(supported, supported))
             {

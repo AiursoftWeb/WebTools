@@ -2,12 +2,10 @@
 using Aiursoft.CSTools.Tools;
 using Aiursoft.WebTools.Abstractions.Models;
 using Aiursoft.WebTools.Attributes;
-using Aiursoft.WebTools.OfficialPlugins;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
-using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
@@ -41,28 +39,6 @@ public class StartupTests
     }
 
     [TestMethod]
-    public async Task CroatianIsAvailableOnlyInOptedInApplications()
-    {
-        var enabledPort = Network.GetAvailablePort();
-        await using var enabled = await Extends.AppAsync<TestStartup>(["--Localization:EnableCroatian=true"], enabledPort);
-        await enabled.StartAsync();
-        var defaultPort = Network.GetAvailablePort();
-        await using var defaultApp = await Extends.AppAsync<TestStartup>([], defaultPort);
-        await defaultApp.StartAsync();
-
-        var enabledCultures = enabled.Services.GetRequiredKeyedService<IReadOnlyDictionary<string, string>>(typeof(LocalizationPlugin));
-        var defaultCultures = defaultApp.Services.GetRequiredKeyedService<IReadOnlyDictionary<string, string>>(typeof(LocalizationPlugin));
-        Assert.AreEqual(defaultCultures.Count + 1, enabledCultures.Count);
-        Assert.AreEqual("Hrvatski", enabledCultures["hr-HR"]);
-        Assert.IsFalse(defaultCultures.ContainsKey("hr-HR"));
-
-        using var client = ClientFactory.CreateClient();
-        client.DefaultRequestHeaders.AcceptLanguage.ParseAdd("hr");
-        Assert.AreEqual("hr-HR", await client.GetStringAsync($"http://localhost:{enabledPort}/culture"));
-        Assert.AreEqual("en-US", await client.GetStringAsync($"http://localhost:{defaultPort}/culture"));
-    }
-
-    [TestMethod]
     public async Task TestMaxBodySizePluginSetsFormOptionsLimit()
     {
         var port = Network.GetAvailablePort();
@@ -84,9 +60,6 @@ internal class TestStartup : IWebStartup
 
     public void Configure(WebApplication app)
     {
-        app.MapGet("/culture", (HttpContext context) =>
-            context.Features.Get<IRequestCultureFeature>()!.RequestCulture.UICulture.Name);
-
         // Hello world data:
         app.Use(async (context, next) =>
         {
