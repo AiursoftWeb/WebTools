@@ -40,7 +40,8 @@ public class LocalizationPlugin : IWebAppPlugin
         { "id-ID", "Bahasa Indonesia (Indonesia)" },
         { "fi-FI", "Suomi (Suomi)" },
         { "hi-IN", "हिन्दी (भारत)" },
-        { "el-GR", "Ελληνικά (Ελλάδα)" }
+        { "el-GR", "Ελληνικά (Ελλάδα)" },
+        { "hr-HR", "Hrvatski" }
     };
 
     public bool ShouldAddThisPlugin()
