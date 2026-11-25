@@ -41,7 +41,7 @@ public class LocalizationPlugin : IWebAppPlugin
         { "fi-FI", "Suomi (Suomi)" },
         { "hi-IN", "हिन्दी (भारत)" },
         { "el-GR", "Ελληνικά (Ελλάδα)" },
-        { "hr-HR", "Hrvatski" }
+        { "hr-HR", "Hrvatski (Hrvatska)" }
     };
 
     public bool ShouldAddThisPlugin()
